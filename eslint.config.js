@@ -10,7 +10,10 @@ export default [
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        jest: true, // Add Jest globals here
+      },
       parserOptions: {
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
@@ -35,6 +38,18 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    // Add this override section to target test files
+    files: ['**/*.test.js', '**/*.test.jsx'],
+    languageOptions: {
+      globals: {
+        jest: true,
+        describe: true,
+        test: true,
+        expect: true, // explicitly adding Jest globals to test files
+      },
     },
   },
 ];

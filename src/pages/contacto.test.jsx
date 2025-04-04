@@ -1,16 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Contacto from "./contacto"; // Path to your Contacto component
 
-// Mock Layout component if needed (you can skip this if Layout is working fine)
-jest.mock("../components/Layout", () => {
-  return ({ pageTitle, children }) => (
-    <div>
-      <h1>{pageTitle}</h1>
-      <div>{children}</div>
-    </div>
-  );
-});
-
 describe("Contacto Page", () => {
   test("renders the page title and content", () => {
     render(<Contacto />);
