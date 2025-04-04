@@ -1,6 +1,6 @@
-import { React, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input } from "@ui5/webcomponents-react";
+import { Button } from "@ui5/webcomponents-react";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -41,6 +41,7 @@ const Login = () => {
         setError(data.error || "An error occurred during registration.");
       }
     } catch (err) {
+      console.error("Registration error:", err);
       setError("Server error, please try again.");
     }
   };
@@ -69,6 +70,7 @@ const Login = () => {
         setError(data.error || "Invalid credentials");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Server error, please try again.");
     }
   };

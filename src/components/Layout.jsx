@@ -1,4 +1,4 @@
-import React from "react";
+//import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Bar, SideNavigation, SideNavigationItem, Title } from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-icons/dist/home.js";
@@ -15,7 +15,7 @@ const Layout = ({ pageTitle, children }) => {
     navigate("/", { replace: true });
   };
 
-  const handleNavigation = (path, title) => {
+  const handleNavigation = (path) => {
     navigate(path);
   };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "@ui5/webcomponents/dist/Table.js";
 import "@ui5/webcomponents/dist/TableRow.js";
 import "@ui5/webcomponents/dist/TableCell.js";
@@ -31,6 +31,7 @@ const Usuarios = () => {
           setError("Failed to load users");
         }
       } catch (err) {
+        console.log(err)
         setError("An error occurred while fetching users");
       } finally {
         setLoading(false); // Set loading to false after data is fetched

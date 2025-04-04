@@ -1,12 +1,10 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Contacto from "./pages/contacto";
 import Usuarios from "./pages/Usuarios";
 
 // ProtectedRoute component that checks if the user is authenticated
-const ProtectedRoute = ({ children }) => {
+/*const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem("token"); // Check if a token exists (adjust based on your auth flow)
 
   // If the user is not authenticated, redirect to the login page
@@ -15,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   return children; // Otherwise, render the protected route
-};
+};*/
 
 const App = () => {
   return (
