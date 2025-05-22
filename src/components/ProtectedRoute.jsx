@@ -1,26 +1,36 @@
-// components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
-  return null;
-};
+import { useEffect, useState } from "react";
 
 const ProtectedRoute = ({ children }) => {
-  const userCookie = getCookie("UserData");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  if (!userCookie) {
-    return <Navigate to="/" replace />; // Redirect to login if no cookie
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/users/getSession", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  try {
-    JSON.parse(userCookie); // Optional: validate JSON
-    return children;
-  } catch {
-    return <Navigate to="/" replace />;
-  }
+    checkSession();
+  }, []);
+
+  if (isLoading) return <p>Loading...</p>;
+
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+
+  return children;
 };
 
 export default ProtectedRoute;

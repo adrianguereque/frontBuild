@@ -42,23 +42,25 @@ const Login = () => {
   }, [navigate]);
 
   const handleLogin = async (event) => {
-    event.preventDefault();
-    setError(null);
+  event.preventDefault();
+  setError(null);
 
-    try {
-      const response = await fetch("http://localhost:5000/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: password }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Login failed");
-      window.location.reload(); // Triggers useEffect to redirect
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  try {
+    const response = await fetch("http://localhost:5000/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password }),
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Login failed");
+
+    navigate("/home"); // ✅ instead of reload
+  } catch (err) {
+    setError(err.message);
+  }
+};
+
 
   const handleRegister = async () => {
     setError(null);
