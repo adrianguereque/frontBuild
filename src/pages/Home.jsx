@@ -1,45 +1,39 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
+  return null;
+};
+
 const Home = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
+    const cookieData = getCookie("UserData");
+    if (cookieData) {
       try {
-        const response = await fetch("http://localhost:5000/users/getUserData", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`, // Attach token
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData); // Store user details in state
-        } else {
-          console.error("Failed to fetch user data");
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
+        const parsedData = JSON.parse(cookieData);
+        setUser(parsedData);
+        console.log("User loaded from cookie:", parsedData);
+      } catch (e) {
+        console.error("Invalid JSON in UserData cookie:", e);
       }
-    };
-
-    fetchUserData();
+    }
   }, []);
 
   return (
     <Layout pageTitle="Home">
       <h2>Welcome!</h2>
-      {user && (
+      {user ? (
         <div>
-          <p>Name: {user.Name}</p>
-          <p>Email: {user.Email}</p>
+          <p>Name: {user.name || user.usuario || "Unknown"}</p>
+          <p>Email: {user.email || user.correo || "Unknown"}</p>
         </div>
+      ) : (
+        <p>No user data found.</p>
       )}
     </Layout>
   );

@@ -9,11 +9,20 @@ import "@ui5/webcomponents-icons/dist/contacts.js";
 const Layout = ({ pageTitle, children }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+  try {
+    await fetch("http://localhost:5000/users/logoutUser", {
+      method: "POST",
+      credentials: "include", // Include cookies (so server can clear them)
+    });
+
+    // Redirect to login or landing page
     navigate("/", { replace: true });
-  };
+  } catch (error) {
+    console.error("Logout failed:", error);
+    alert("Logout failed. Please try again.");
+  }
+};
 
   const handleNavigation = (path) => {
     navigate(path);
