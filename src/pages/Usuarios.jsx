@@ -7,35 +7,19 @@ import "@ui5/webcomponents/dist/TableHeaderRow.js";
 import "@ui5/webcomponents/dist/Label.js";
 import Layout from "../components/Layout";
 
-const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
-  return null;
-};
-
 const Usuarios = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Track which user is being edited and temp edits
+  const [editUserId, setEditUserId] = useState(null);
+  const [editForm, setEditForm] = useState({ name: "", password: "" });
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        //const cookie = getCookie("Auth");
-        //if (!cookie) throw new Error("No Auth cookie found");
-
-        //const { token } = JSON.parse(cookie);
-
-        const response = await fetch("http://localhost:5000/users/getUsers", {
-          method: "GET",
-          //headers: {
-           // "Authorization": `Bearer ${token}`,
-            //"Content-Type": "application/json",
-          //},
-          //credentials: "include",
-        });
-
+        const response = await fetch("http://localhost:5000/users/getUsers");
         if (response.ok) {
           const data = await response.json();
           setUsers(data);
@@ -53,13 +37,68 @@ const Usuarios = () => {
     fetchUsers();
   }, []);
 
-  if (loading) {
-    return <Layout><p>Loading...</p></Layout>;
-  }
+  // Handle edit button click
+  const startEditing = (user) => {
+    setEditUserId(user.id);
+    setEditForm({ name: user.name, password: "" }); // password empty initially
+  };
 
-  if (error) {
-    return <Layout><p>{error}</p></Layout>;
-  }
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditUserId(null);
+    setEditForm({ name: "", password: "" });
+  };
+
+  // Handle input changes during editing
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Update user API call
+  const saveUser = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5000/users/updateUser/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUsers((prevUsers) =>
+          prevUsers.map((user) => (user.id === id ? updatedUser : user))
+        );
+        cancelEditing();
+      } else {
+        alert("Failed to update user");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating user");
+    }
+  };
+
+  // Delete user API call
+  const deleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/users/deleteUser/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      } else {
+        alert("Failed to delete user");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting user");
+    }
+  };
+
+  if (loading) return <Layout><p>Loading...</p></Layout>;
+  if (error) return <Layout><p>{error}</p></Layout>;
 
   return (
     <Layout pageTitle="Usuarios">
@@ -72,16 +111,61 @@ const Usuarios = () => {
           <ui5-table-header-cell>Password</ui5-table-header-cell>
           <ui5-table-header-cell>Role</ui5-table-header-cell>
           <ui5-table-header-cell>Created At</ui5-table-header-cell>
+          <ui5-table-header-cell>Actions</ui5-table-header-cell>
         </ui5-table-header-row>
 
         {users.map((user) => (
           <ui5-table-row key={user.id}>
             <ui5-table-cell><ui5-label>{user.id}</ui5-label></ui5-table-cell>
-            <ui5-table-cell><ui5-label>{user.name}</ui5-label></ui5-table-cell>
+
+            {/* Name: editable if editing */}
+            <ui5-table-cell>
+              {editUserId === user.id ? (
+                <input
+                  type="text"
+                  name="name"
+                  value={editForm.name}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <ui5-label>{user.name}</ui5-label>
+              )}
+            </ui5-table-cell>
+
             <ui5-table-cell><ui5-label>{user.email}</ui5-label></ui5-table-cell>
-            <ui5-table-cell><ui5-label>{user.password}</ui5-label></ui5-table-cell>
+
+            {/* Password: editable if editing, masked otherwise */}
+            <ui5-table-cell>
+              {editUserId === user.id ? (
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="New password"
+                  value={editForm.password}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <ui5-label>{user.password ? "********" : ""}</ui5-label>
+              )}
+            </ui5-table-cell>
+
             <ui5-table-cell><ui5-label>{user.role}</ui5-label></ui5-table-cell>
             <ui5-table-cell><ui5-label>{new Date(user.createdAt).toLocaleString()}</ui5-label></ui5-table-cell>
+
+            {/* Actions */}
+            <ui5-table-cell>
+              {editUserId === user.id ? (
+                <>
+                  <button onClick={() => saveUser(user.id)}>Save</button>
+                  <button onClick={cancelEditing}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => startEditing(user)}>Edit</button>
+                  <button onClick={() => deleteUser(user.id)} style={{ marginLeft: "8px" }}>Delete</button>
+                </>
+              )}
+            </ui5-table-cell>
           </ui5-table-row>
         ))}
       </ui5-table>
