@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+//import { jwtDecode } from "jwt-decode";
 import "@ui5/webcomponents/dist/Button.js";
 import "@ui5/webcomponents/dist/Input.js";
 import "@ui5/webcomponents/dist/Title.js";
@@ -30,7 +30,7 @@ const Login = () => {
         const token = data.token;
         if (!token) return;
 
-        const decoded = jwtDecode(token);
+        //const decoded = jwtDecode(token);
         // console.log("name ya autenticado:", decoded);
         navigate("/home");
       } catch (error) {
