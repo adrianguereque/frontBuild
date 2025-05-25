@@ -7,6 +7,8 @@ import "@ui5/webcomponents/dist/TableHeaderRow.js";
 import "@ui5/webcomponents/dist/Label.js";
 import Layout from "../components/Layout";
 
+const API_HOST = import.meta.env.VITE_API_HOST;
+
 const Usuarios = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,11 @@ const Usuarios = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/users/getUsers");
+        const response = await fetch(`${API_HOST}/users/getUsers`, {
+          method: "GET",
+          credentials: "include", 
+        });
+
         if (response.ok) {
           const data = await response.json();
           setUsers(data);
@@ -58,8 +64,9 @@ const Usuarios = () => {
   // Update user API call
   const saveUser = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/users/updateUser/${id}`, {
+      const response = await fetch(`${API_HOST}/users/updateUser/${id}`, {
         method: "PUT",
+        credentials: "include", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),
       });
@@ -83,8 +90,9 @@ const Usuarios = () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/users/deleteUser/${id}`, {
+      const response = await fetch(`${API_HOST}/users/deleteUser/${id}`, {
         method: "DELETE",
+        credentials: "include", 
       });
       if (response.ok) {
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));

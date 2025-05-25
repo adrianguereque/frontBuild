@@ -5,6 +5,8 @@ import "@ui5/webcomponents/dist/Button.js";
 import "@ui5/webcomponents/dist/Input.js";
 import "@ui5/webcomponents/dist/Title.js";
 
+const API_HOST = import.meta.env.VITE_API_HOST;
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState(""); // For registration
@@ -20,7 +22,7 @@ const Login = () => {
 
     const checkSession = async () => {
       try {
-        const response = await fetch("http://localhost:5000/users/getSession", {
+        const response = await fetch(`${API_HOST}/users/getSession`, {
           credentials: "include",
         });
 
@@ -46,7 +48,7 @@ const Login = () => {
   setError(null);
 
   try {
-    const response = await fetch("http://localhost:5000/users/login", {
+    const response = await fetch(`${API_HOST}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, password: password }),
@@ -66,7 +68,7 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/users/register", {
+      const response = await fetch(`${API_HOST}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, name: username, password: password }),

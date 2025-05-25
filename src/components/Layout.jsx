@@ -12,13 +12,15 @@ import "@ui5/webcomponents-icons/dist/settings.js";
 import "@ui5/webcomponents-icons/dist/customer.js";
 import "@ui5/webcomponents-icons/dist/contacts.js";
 
+const API_HOST = import.meta.env.VITE_API_HOST;
+
 const Layout = ({ pageTitle, children }) => {
   const navigate = useNavigate();
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/users/logoutUser", {
+      await fetch(`${API_HOST}/users/logoutUser`, {
         method: "POST",
         credentials: "include",
       });
@@ -45,11 +47,11 @@ const Layout = ({ pageTitle, children }) => {
       const newName = prompt("Enter your new name:");
       if (!newName) return;
 
-      const res = await fetch("http://localhost:5000/users/changeName", {
-        method: "POST",
+      const res = await fetch(`${API_HOST}/users/updateUserMe`, {
+        method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newName }),
+        body: JSON.stringify({ name:newName }),
       });
 
       if (!res.ok) throw new Error("Failed to change name");
@@ -60,11 +62,11 @@ const Layout = ({ pageTitle, children }) => {
       const newPassword = prompt("Enter your new password:");
       if (!newPassword) return;
 
-      const res = await fetch("http://localhost:5000/users/changePassword", {
-        method: "POST",
+      const res = await fetch(`${API_HOST}/users/updateUserMe`, {
+        method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ password:newPassword }),
       });
 
       if (!res.ok) throw new Error("Failed to change password");
@@ -75,7 +77,7 @@ const Layout = ({ pageTitle, children }) => {
       const confirmed = window.confirm("Are you sure you want to delete your account? This action is irreversible.");
       if (!confirmed) return;
 
-      const res = await fetch("http://localhost:5000/users/deleteAccount", {
+      const res = await fetch(`${API_HOST}/users/delteUserMe`, {
         method: "DELETE",
         credentials: "include",
       });
