@@ -1,14 +1,20 @@
 import { render, screen } from "@testing-library/react";
-import Contacto from "./contacto"; // Path to your Contacto component
+import { vi } from "vitest";  // Importa vi, que es el equivalente a jest en Vitest
 
-describe("Contacto Page", () => {
-  test("renders the page title and content", () => {
-    render(<Contacto />);
+// Mock del Layout para aislar la prueba
+vi.mock("../components/Layout", () => ({
+  default: ({ children, pageTitle }) => (
+    <div>
+      <h1>{pageTitle}</h1>
+      {children}
+    </div>
+  ),
+}));
 
-    // Check if the page title "Contactos" is rendered
-    expect(screen.getByText("Contactos")).toBeInTheDocument();
+import Contacto from "./contacto";
 
-    // Check if the content "Estas en contacto" is rendered
-    expect(screen.getByText("Estas en contacto")).toBeInTheDocument();
-  });
+test("renderiza Contacto con el título correcto y contenido", () => {
+  render(<Contacto />);
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Contactos");
+  expect(screen.getByText("Estas en contacto")).toBeInTheDocument();
 });
