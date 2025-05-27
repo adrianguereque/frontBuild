@@ -18,30 +18,31 @@ const Usuarios = () => {
   const [editUserId, setEditUserId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", password: "" });
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${API_HOST}/users/getUsers`, {
-          method: "GET",
-          credentials: "include", 
-        });
+  const fetchUsers = async () => {
+  try {
+    const response = await fetch(`${API_HOST}/users/getUsers`, {
+      method: "GET",
+      credentials: "include", 
+    });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data);
-        } else {
-          setError("Failed to load users");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("An error occurred while fetching users");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (response.ok) {
+      const data = await response.json();
+      setUsers(data);
+    } else {
+      setError("Failed to load users");
+    }
+  } catch (err) {
+    console.error(err);
+    setError("An error occurred while fetching users");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    fetchUsers();
-  }, []);
+useEffect(() => {
+  fetchUsers();
+}, []);
+
 
   // Handle edit button click
   const startEditing = (user) => {
@@ -71,10 +72,7 @@ const Usuarios = () => {
         body: JSON.stringify(editForm),
       });
       if (response.ok) {
-        const updatedUser = await response.json();
-        setUsers((prevUsers) =>
-          prevUsers.map((user) => (user.id === id ? updatedUser : user))
-        );
+        await fetchUsers();     
         cancelEditing();
       } else {
         alert("Failed to update user");
@@ -117,8 +115,6 @@ const Usuarios = () => {
           <ui5-table-header-cell>Name</ui5-table-header-cell>
           <ui5-table-header-cell>Email</ui5-table-header-cell>
           <ui5-table-header-cell>Password</ui5-table-header-cell>
-          <ui5-table-header-cell>Role</ui5-table-header-cell>
-          <ui5-table-header-cell>Created At</ui5-table-header-cell>
           <ui5-table-header-cell>Actions</ui5-table-header-cell>
         </ui5-table-header-row>
 
@@ -156,9 +152,6 @@ const Usuarios = () => {
                 <ui5-label>{user.password ? "********" : ""}</ui5-label>
               )}
             </ui5-table-cell>
-
-            <ui5-table-cell><ui5-label>{user.role}</ui5-label></ui5-table-cell>
-            <ui5-table-cell><ui5-label>{new Date(user.createdAt).toLocaleString()}</ui5-label></ui5-table-cell>
 
             {/* Actions */}
             <ui5-table-cell>
